@@ -1,11 +1,15 @@
 "use client";
 import LoginButton from "@/components/LoginButton";
-import { SignedOut, UserButton } from "@clerk/nextjs";
+import { useUser, UserButton } from "@clerk/nextjs";
 import { User } from "lucide-react";
 
 function HeaderProfileBtn() {
+  const { isSignedIn } = useUser();
+
+  if (!isSignedIn) return <LoginButton />;
+
   return (
-    <>
+    <div>
       <UserButton>
         <UserButton.MenuItems>
           <UserButton.Link
@@ -15,11 +19,7 @@ function HeaderProfileBtn() {
           />
         </UserButton.MenuItems>
       </UserButton>
-
-      <SignedOut>
-        <LoginButton />
-      </SignedOut>
-    </>
+    </div>
   );
 }
 export default HeaderProfileBtn;

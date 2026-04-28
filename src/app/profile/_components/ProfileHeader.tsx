@@ -4,7 +4,7 @@ import { Activity, Code2, Star, Timer, TrendingUp, Trophy, UserIcon, Zap } from 
 import { motion } from "framer-motion";
 import { Id } from "../../../../convex/_generated/dataModel";
 
-import { UserResource } from "@clerk/types";
+import type { UserResource } from "@clerk/shared/types";
 
 interface ProfileHeaderProps {
   userStats: {

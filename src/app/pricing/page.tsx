@@ -7,7 +7,6 @@ import { ENTERPRISE_FEATURES, FEATURES } from "./_constants";
 import { Star } from "lucide-react";
 import FeatureCategory from "./_components/FeatureCategory";
 import FeatureItem from "./_components/FeatureItem";
-import { SignedIn, SignedOut } from "@clerk/nextjs";
 import UpgradeButton from "./_components/UpgradeButton";
 import LoginButton from "@/components/LoginButton";
 
@@ -124,13 +123,7 @@ async function PricingPage() {
 
                 {/* CTA */}
                 <div className="flex justify-center">
-                  <SignedIn>
-                    <UpgradeButton />
-                  </SignedIn>
-
-                  <SignedOut>
-                    <LoginButton />
-                  </SignedOut>
+                  {user ? <UpgradeButton /> : <LoginButton />}
                 </div>
               </div>
             </div>
