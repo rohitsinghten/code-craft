@@ -3,6 +3,65 @@ import { LANGUAGE_CONFIG } from "@/app/(root)/_constants";
 import { create } from "zustand";
 import { Monaco } from "@monaco-editor/react";
 
+const runJavaScriptLocally = (code: string) =>
+  new Promise<{ output: string; error: string | null }>((resolve) => {
+    const workerSource = `
+      const format = (value) => {
+        if (typeof value === "string") return value;
+        try {
+          return JSON.stringify(value);
+        } catch {
+          return String(value);
+        }
+      };
+
+      const logs = [];
+      console.log = (...args) => logs.push(args.map(format).join(" "));
+      console.error = (...args) => logs.push(args.map(format).join(" "));
+
+      self.onmessage = async (event) => {
+        try {
+          const userCode = event.data;
+          const execute = new Function(
+            "return (async () => {\\n" + userCode + "\\n})()"
+          );
+          const result = await (async () => {
+            return execute();
+          })();
+
+          if (result !== undefined) logs.push(format(result));
+          self.postMessage({ output: logs.join("\\n"), error: null });
+        } catch (error) {
+          self.postMessage({
+            output: logs.join("\\n"),
+            error: error instanceof Error ? error.message : String(error),
+          });
+        }
+      };
+    `;
+
+    const blob = new Blob([workerSource], { type: "application/javascript" });
+    const worker = new Worker(URL.createObjectURL(blob));
+    const timeout = window.setTimeout(() => {
+      worker.terminate();
+      resolve({ output: "", error: "Execution timed out after 5 seconds" });
+    }, 5000);
+
+    worker.onmessage = (event: MessageEvent<{ output: string; error: string | null }>) => {
+      window.clearTimeout(timeout);
+      worker.terminate();
+      resolve(event.data);
+    };
+
+    worker.onerror = (event) => {
+      window.clearTimeout(timeout);
+      worker.terminate();
+      resolve({ output: "", error: event.message });
+    };
+
+    worker.postMessage(code);
+  });
+
 const getInitialState = () => {
   // if we're on the server, return default values
   if (typeof window === "undefined") {
@@ -83,8 +142,28 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
       set({ isRunning: true, error: null, output: "" });
 
       try {
+        if (language === "javascript") {
+          const result = await runJavaScriptLocally(code);
+
+          if (result.error) {
+            set({
+              error: result.error,
+              output: result.output.trim(),
+              executionResult: { code, output: result.output.trim(), error: result.error },
+            });
+            return;
+          }
+
+          set({
+            output: result.output.trim(),
+            error: null,
+            executionResult: { code, output: result.output.trim(), error: null },
+          });
+          return;
+        }
+
         const runtime = LANGUAGE_CONFIG[language].pistonRuntime;
-        const response = await fetch("https://emkc.org/api/v2/piston/execute", {
+        const response = await fetch("/api/execute", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -102,7 +181,11 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
 
         // handle API-level erros
         if (data.message) {
-          set({ error: data.message, executionResult: { code, output: "", error: data.message } });
+          const message =
+            response.status === 401
+              ? "The public Piston API is no longer available for this app. JavaScript now runs locally; other languages need a self-hosted Piston-compatible API configured with PISTON_API_URL."
+              : data.message;
+          set({ error: message, executionResult: { code, output: "", error: message } });
           return;
         }
 
