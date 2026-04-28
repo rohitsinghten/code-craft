@@ -1,4 +1,5 @@
 import { useCodeEditorStore } from "@/store/useCodeEditorStore";
+import { useUser } from "@clerk/nextjs";
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import { api } from "../../../../convex/_generated/api";
@@ -9,6 +10,8 @@ function ShareSnippetDialog({ onClose }: { onClose: () => void }) {
   const [title, setTitle] = useState("");
   const [isSharing, setIsSharing] = useState(false);
   const { language, getCode } = useCodeEditorStore();
+  const { user } = useUser();
+  const syncUser = useMutation(api.users.syncUser);
   const createSnippet = useMutation(api.snippets.createSnippet);
 
   const handleShare = async (e: React.FormEvent) => {
@@ -17,6 +20,14 @@ function ShareSnippetDialog({ onClose }: { onClose: () => void }) {
     setIsSharing(true);
 
     try {
+      if (!user) throw new Error("Not authenticated");
+
+      await syncUser({
+        userId: user.id,
+        email: user.primaryEmailAddress?.emailAddress ?? "",
+        name: user.fullName ?? user.username ?? user.primaryEmailAddress?.emailAddress ?? "Anonymous",
+      });
+
       const code = getCode();
       await createSnippet({ title, language, code });
       onClose();

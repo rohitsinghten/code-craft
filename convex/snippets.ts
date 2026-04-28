@@ -11,11 +11,21 @@ export const createSnippet = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
 
-    const user = await ctx.db
+    let user = await ctx.db
       .query("users")
       .withIndex("by_user_id")
       .filter((q) => q.eq(q.field("userId"), identity.subject))
       .first();
+
+    if (!user) {
+      const userId = await ctx.db.insert("users", {
+        userId: identity.subject,
+        email: identity.email ?? "",
+        name: identity.name ?? identity.nickname ?? identity.email ?? "Anonymous",
+        isPro: false,
+      });
+      user = await ctx.db.get(userId);
+    }
 
     if (!user) throw new Error("User not found");
 
@@ -108,11 +118,21 @@ export const addComment = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
 
-    const user = await ctx.db
+    let user = await ctx.db
       .query("users")
       .withIndex("by_user_id")
       .filter((q) => q.eq(q.field("userId"), identity.subject))
       .first();
+
+    if (!user) {
+      const userId = await ctx.db.insert("users", {
+        userId: identity.subject,
+        email: identity.email ?? "",
+        name: identity.name ?? identity.nickname ?? identity.email ?? "Anonymous",
+        isPro: false,
+      });
+      user = await ctx.db.get(userId);
+    }
 
     if (!user) throw new Error("User not found");
 
