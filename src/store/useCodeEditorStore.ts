@@ -177,13 +177,13 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
 
         const data = await response.json();
 
-        console.log("data back from piston:", data);
+        console.log("data back from code execution API:", data);
 
-        // handle API-level erros
+        // handle API-level errors
         if (data.message) {
           const message =
-            response.status === 401
-              ? "The public Piston API is no longer available for this app. JavaScript now runs locally; other languages need a self-hosted Piston-compatible API configured with PISTON_API_URL."
+            response.status === 429
+              ? "The free Judge0 service is rate limited right now. Try again shortly or configure JUDGE0_API_URL with a dedicated Judge0 endpoint."
               : data.message;
           set({ error: message, executionResult: { code, output: "", error: message } });
           return;
