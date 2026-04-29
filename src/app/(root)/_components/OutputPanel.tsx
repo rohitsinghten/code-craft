@@ -5,7 +5,11 @@ import { AlertTriangle, CheckCircle, Clock, Copy, Terminal } from "lucide-react"
 import { useState } from "react";
 import RunningCodeSkeleton from "./RunningCodeSkeleton";
 
-function OutputPanel() {
+type OutputPanelProps = {
+  className?: string;
+};
+
+function OutputPanel({ className = "" }: OutputPanelProps) {
   const { output, error, isRunning } = useCodeEditorStore();
   const [isCopied, setIsCopied] = useState(false);
 
@@ -20,7 +24,7 @@ function OutputPanel() {
   };
 
   return (
-    <div className="relative bg-[#181825] rounded-xl p-4 ring-1 ring-gray-800/50">
+    <div className={`relative flex flex-col bg-[#181825] rounded-xl p-4 ring-1 ring-gray-800/50 ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -52,10 +56,10 @@ function OutputPanel() {
       </div>
 
       {/* Output Area */}
-      <div className="relative">
+      <div className="relative min-h-[600px] flex-1">
         <div
           className="relative bg-[#1e1e2e]/50 backdrop-blur-sm border border-[#313244] 
-        rounded-xl p-4 h-[600px] overflow-auto font-mono text-sm"
+        rounded-xl p-4 h-full overflow-auto font-mono text-sm"
         >
           {isRunning ? (
             <RunningCodeSkeleton />
