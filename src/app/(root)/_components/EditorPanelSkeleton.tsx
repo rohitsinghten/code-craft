@@ -1,5 +1,7 @@
 import { Terminal } from "lucide-react";
 
+const CODE_LINE_WIDTHS = [78, 46, 64, 35, 72, 54, 83, 41, 68, 58, 74, 49, 62, 38, 70];
+
 export function EditorPanelSkeleton() {
   return (
     <div className="relative">
@@ -15,7 +17,7 @@ export function EditorPanelSkeleton() {
                 <div className={`w-12 h-4 bg-white/5 rounded`} />
                 <div
                   className={`h-4 bg-white/5 rounded`}
-                  style={{ width: `${Math.random() * 60 + 20}%` }}
+                  style={{ width: `${CODE_LINE_WIDTHS[i]}%` }}
                 />
               </div>
             ))}

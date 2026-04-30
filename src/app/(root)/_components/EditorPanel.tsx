@@ -6,7 +6,7 @@ import { Editor } from "@monaco-editor/react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { RotateCcwIcon, ShareIcon, TypeIcon } from "lucide-react";
-import { useClerk } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import { EditorPanelSkeleton } from "./EditorPanelSkeleton";
 import useMounted from "@/hooks/useMounted";
 import ShareSnippetDialog from "./ShareSnippetDialog";
@@ -17,6 +17,7 @@ type EditorPanelProps = {
 
 function EditorPanel({ className = "" }: EditorPanelProps) {
   const clerk = useClerk();
+  const { isSignedIn } = useUser();
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const { language, theme, fontSize, editor, setFontSize, setEditor } = useCodeEditorStore();
 
@@ -47,6 +48,15 @@ function EditorPanel({ className = "" }: EditorPanelProps) {
     const size = Math.min(Math.max(newSize, 12), 24);
     setFontSize(size);
     localStorage.setItem("editor-font-size", size.toString());
+  };
+
+  const handleShareClick = () => {
+    if (!isSignedIn) {
+      clerk.openSignIn();
+      return;
+    }
+
+    setIsShareDialogOpen(true);
   };
 
   if (!mounted) return null;
@@ -98,7 +108,7 @@ function EditorPanel({ className = "" }: EditorPanelProps) {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => setIsShareDialogOpen(true)}
+              onClick={handleShareClick}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg overflow-hidden bg-gradient-to-r
                from-blue-500 to-blue-600 opacity-90 hover:opacity-100 transition-opacity"
             >

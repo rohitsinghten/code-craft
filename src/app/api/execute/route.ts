@@ -1,4 +1,7 @@
+import { auth } from "@clerk/nextjs/server";
+import { ConvexHttpClient } from "convex/browser";
 import { NextResponse } from "next/server";
+import { api } from "../../../../convex/_generated/api";
 
 const DEFAULT_JUDGE0_API_URL = "https://ce.judge0.com";
 
@@ -43,6 +46,24 @@ export async function POST(request: Request) {
       { message: `Unsupported language for Judge0 execution: ${body.language}` },
       { status: 400 }
     );
+  }
+
+  if (body.language !== "javascript") {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return NextResponse.json({ message: "Sign in to run this language." }, { status: 401 });
+    }
+
+    const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+    const user = await convex.query(api.users.getUser, { userId });
+
+    if (!user?.isPro) {
+      return NextResponse.json(
+        { message: "Pro subscription required to use this language." },
+        { status: 403 }
+      );
+    }
   }
 
   try {

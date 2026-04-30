@@ -19,8 +19,8 @@ async function Header() {
   return (
     <div className="relative z-10">
       <div
-        className="flex items-center lg:justify-between justify-center 
-        bg-[#0a0a0f]/80 backdrop-blur-xl p-6 mb-4 rounded-lg"
+        className="flex flex-wrap items-center justify-center gap-4 lg:justify-between
+        bg-[#0a0a0f]/80 backdrop-blur-xl p-4 sm:p-6 mb-4 rounded-lg"
       >
         <div className="hidden lg:flex items-center gap-8">
           <Link href="/" className="flex items-center gap-3 group relative">
@@ -71,8 +71,8 @@ async function Header() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
+        <div className="flex min-w-0 flex-wrap items-center justify-center gap-3 lg:justify-end">
+          <div className="flex min-w-0 flex-wrap items-center justify-center gap-3">
             <ThemeSelector />
             <LanguageSelector hasAccess={Boolean(convexUser?.isPro)} />
           </div>
@@ -80,7 +80,7 @@ async function Header() {
           {!convexUser?.isPro && (
             <Link
               href="/pricing"
-              className="flex items-center gap-2 px-4 py-1.5 rounded-lg border border-amber-500/20 hover:border-amber-500/40 bg-gradient-to-r from-amber-500/10 
+              className="flex h-10 shrink-0 items-center gap-2 whitespace-nowrap px-3 sm:px-4 py-1.5 rounded-lg border border-amber-500/20 hover:border-amber-500/40 bg-gradient-to-r from-amber-500/10 
                 to-orange-500/10 hover:from-amber-500/20 hover:to-orange-500/20 
                 transition-all duration-300"
             >
@@ -91,9 +91,9 @@ async function Header() {
             </Link>
           )}
 
-          {user && <RunButton />}
+          <RunButton />
 
-          <div className="pl-3 border-l border-gray-800">
+          <div className="shrink-0 pl-3 border-l border-gray-800">
             <HeaderProfileBtn />
           </div>
         </div>
