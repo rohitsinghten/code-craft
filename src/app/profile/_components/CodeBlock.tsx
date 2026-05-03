@@ -31,9 +31,11 @@ const CodeBlock = ({ code, language }: CodeBlockProps) => {
 
       {lines.length > 6 && (
         <button
+          type="button"
           onClick={() => setIsExpanded(!isExpanded)}
+          aria-expanded={isExpanded}
           className="absolute bottom-2 right-2 px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs flex items-center 
-          gap-1 hover:bg-blue-500/30 transition-colors"
+          gap-1 hover:bg-blue-500/30 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70"
         >
           {isExpanded ? (
             <>

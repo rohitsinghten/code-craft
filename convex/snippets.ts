@@ -1,5 +1,40 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+
+const MAX_CODE_LENGTH = 20_000;
+const MAX_SNIPPET_TITLE_LENGTH = 120;
+const MAX_COMMENT_LENGTH = 4_000;
+const SUPPORTED_LANGUAGES = new Set([
+  "javascript",
+  "typescript",
+  "python",
+  "java",
+  "go",
+  "rust",
+  "cpp",
+  "csharp",
+  "ruby",
+  "swift",
+]);
+
+function validateSnippetInput(title: string, language: string, code: string) {
+  if (!title.trim()) throw new ConvexError("Snippet title is required");
+  if (title.length > MAX_SNIPPET_TITLE_LENGTH) {
+    throw new ConvexError(`Snippet title must be ${MAX_SNIPPET_TITLE_LENGTH} characters or less`);
+  }
+  if (!SUPPORTED_LANGUAGES.has(language)) throw new ConvexError("Unsupported language");
+  if (!code.trim()) throw new ConvexError("Snippet code is required");
+  if (code.length > MAX_CODE_LENGTH) {
+    throw new ConvexError(`Snippet code must be ${MAX_CODE_LENGTH} characters or less`);
+  }
+}
+
+function validateComment(content: string) {
+  if (!content.trim()) throw new ConvexError("Comment is required");
+  if (content.length > MAX_COMMENT_LENGTH) {
+    throw new ConvexError(`Comment must be ${MAX_COMMENT_LENGTH} characters or less`);
+  }
+}
 
 export const createSnippet = mutation({
   args: {
@@ -10,6 +45,7 @@ export const createSnippet = mutation({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
+    validateSnippetInput(args.title, args.language, args.code);
 
     let user = await ctx.db
       .query("users")
@@ -32,7 +68,7 @@ export const createSnippet = mutation({
     const snippetId = await ctx.db.insert("snippets", {
       userId: identity.subject,
       userName: user.name,
-      title: args.title,
+      title: args.title.trim(),
       language: args.language,
       code: args.code,
     });
@@ -89,6 +125,9 @@ export const starSnippet = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
 
+    const snippet = await ctx.db.get(args.snippetId);
+    if (!snippet) throw new ConvexError("Snippet not found");
+
     const existing = await ctx.db
       .query("stars")
       .withIndex("by_user_id_and_snippet_id")
@@ -117,6 +156,10 @@ export const addComment = mutation({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
+    validateComment(args.content);
+
+    const snippet = await ctx.db.get(args.snippetId);
+    if (!snippet) throw new ConvexError("Snippet not found");
 
     let user = await ctx.db
       .query("users")
@@ -140,7 +183,7 @@ export const addComment = mutation({
       snippetId: args.snippetId,
       userId: identity.subject,
       userName: user.name,
-      content: args.content,
+      content: args.content.trim(),
     });
   },
 });

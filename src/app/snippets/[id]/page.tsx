@@ -1,24 +1,41 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import SnippetLoadingSkeleton from "./_components/SnippetLoadingSkeleton";
 import NavigationHeader from "@/components/NavigationHeader";
-import { Clock, Code, MessageSquare, User } from "lucide-react";
-import { Editor } from "@monaco-editor/react";
-import { defineMonacoThemes, LANGUAGE_CONFIG } from "@/app/(root)/_constants";
+import { Clock, Code, GitFork, MessageSquare, Play, User } from "lucide-react";
+import dynamic from "next/dynamic";
+import { defineMonacoThemes, getLanguageConfig } from "@/lib/editor-config";
 import CopyButton from "./_components/CopyButton";
 import Comments from "./_components/Comments";
+import { useCodeEditorStore } from "@/store/useCodeEditorStore";
+
+const Editor = dynamic(() => import("@monaco-editor/react").then((mod) => mod.Editor), {
+  ssr: false,
+});
 
 function SnippetDetailPage() {
   const snippetId = useParams().id;
+  const router = useRouter();
+  const loadSnippetIntoEditor = useCodeEditorStore((state) => state.loadSnippetIntoEditor);
 
   const snippet = useQuery(api.snippets.getSnippetById, { snippetId: snippetId as Id<"snippets"> });
   const comments = useQuery(api.snippets.getComments, { snippetId: snippetId as Id<"snippets"> });
 
   if (snippet === undefined) return <SnippetLoadingSkeleton />;
+
+  const languageConfig = getLanguageConfig(snippet.language);
+
+  const openSnippetInEditor = (runOnLoad: boolean) => {
+    if (!languageConfig) return;
+
+    loadSnippetIntoEditor(snippet.language, snippet.code);
+    if (runOnLoad) sessionStorage.setItem("codecraft-run-on-load", "true");
+    router.push("/");
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
@@ -57,8 +74,28 @@ function SnippetDetailPage() {
                   </div>
                 </div>
               </div>
-              <div className="inline-flex items-center px-3 py-1.5 bg-[#ffffff08] text-[#808086] rounded-lg text-sm font-medium">
-                {snippet.language}
+              <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
+                <div className="inline-flex items-center px-3 py-1.5 bg-[#ffffff08] text-[#808086] rounded-lg text-sm font-medium">
+                  {snippet.language}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => openSnippetInEditor(false)}
+                  disabled={!languageConfig}
+                  className="inline-flex items-center gap-2 rounded-lg border border-gray-700 bg-[#ffffff08] px-3 py-1.5 text-sm font-medium text-gray-200 transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70"
+                >
+                  <GitFork className="h-4 w-4" />
+                  Fork snippet
+                </button>
+                <button
+                  type="button"
+                  onClick={() => openSnippetInEditor(true)}
+                  disabled={!languageConfig}
+                  className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+                >
+                  <Play className="h-4 w-4" />
+                  Run in editor
+                </button>
               </div>
             </div>
           </div>
@@ -74,7 +111,7 @@ function SnippetDetailPage() {
             </div>
             <Editor
               height="600px"
-              language={LANGUAGE_CONFIG[snippet.language].monacoLanguage}
+              language={languageConfig?.monacoLanguage ?? "plaintext"}
               value={snippet.code}
               theme="vs-dark"
               beforeMount={defineMonacoThemes}

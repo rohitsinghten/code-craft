@@ -16,7 +16,8 @@ function CopyButton({ code }: { code: string }) {
     <button
       onClick={copyToClipboard}
       type="button"
-      className="p-2 hover:bg-white/10 rounded-lg transition-all duration-200 group relative"
+      aria-label={copied ? "Snippet code copied" : "Copy snippet code"}
+      className="p-2 hover:bg-white/10 rounded-lg transition-all duration-200 group relative focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70"
     >
       {copied ? (
         <Check className="size-4 text-green-400" />

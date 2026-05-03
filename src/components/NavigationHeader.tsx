@@ -15,7 +15,10 @@ function NavigationHeader() {
         <div className="relative h-16 flex items-center justify-between">
           <div className="flex items-center gap-8">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group relative">
+            <Link
+              href="/"
+              className="flex items-center gap-3 group relative rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70"
+            >
               {/* logo hover effect */}
               <div
                 className="absolute -inset-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg opacity-0 
@@ -44,7 +47,7 @@ function NavigationHeader() {
             <Link
               href="/snippets"
               className="relative group flex items-center gap-2 px-4 py-1.5 rounded-lg text-gray-300 bg-gray-800/50 hover:bg-blue-500/10 
-              border border-gray-800 hover:border-blue-500/50 transition-all duration-300 shadow-lg overflow-hidden"
+              border border-gray-800 hover:border-blue-500/50 transition-all duration-300 shadow-lg overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70"
             >
               <div
                 className="absolute inset-0 bg-gradient-to-r from-blue-500/10 
@@ -65,7 +68,7 @@ function NavigationHeader() {
                 className="flex items-center gap-2 px-4 py-1.5 rounded-lg border border-amber-500/20
                  hover:border-amber-500/40 bg-gradient-to-r from-amber-500/10 
                 to-orange-500/10 hover:from-amber-500/20 hover:to-orange-500/20 transition-all 
-                duration-300"
+                duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70"
               >
                 <Sparkles className="w-4 h-4 text-amber-400 hover:text-amber-300" />
                 <span className="text-sm font-medium text-amber-400/90 hover:text-amber-300">

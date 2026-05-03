@@ -14,6 +14,8 @@ export interface Language {
   monacoLanguage: string;
   defaultCode: string;
   pistonRuntime: LanguageRuntime;
+  judge0LanguageId: number;
+  onlineCompilerId?: string;
 }
 
 export interface LanguageRuntime {
@@ -53,6 +55,7 @@ export interface CodeEditorState {
   setTheme: (theme: string) => void;
   setFontSize: (fontSize: number) => void;
   runCode: () => Promise<void>;
+  loadSnippetIntoEditor: (language: string, code: string) => void;
 }
 
 export interface Snippet {

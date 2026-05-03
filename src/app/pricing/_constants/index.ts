@@ -1,45 +1,45 @@
-import { Boxes, Globe, RefreshCcw, Shield } from "lucide-react";
+import { Code2, History, Library, Palette } from "lucide-react";
 
 export const ENTERPRISE_FEATURES = [
   {
-    icon: Globe,
-    label: "Global Infrastructure",
-    desc: "Lightning-fast execution across worldwide edge nodes",
+    icon: Code2,
+    label: "More Languages",
+    desc: "JavaScript and Python are free; Pro unlocks TypeScript, Java, Go, Rust, C++, C#, Ruby, and Swift.",
   },
   {
-    icon: Shield,
-    label: "Enterprise Security",
-    desc: "Bank-grade encryption and security protocols",
+    icon: Palette,
+    label: "Editor Comfort",
+    desc: "Keep your preferred theme, font size, and language setup ready for every session.",
   },
   {
-    icon: RefreshCcw,
-    label: "Real-time Sync",
-    desc: "Instant synchronization across all devices",
+    icon: History,
+    label: "Execution History",
+    desc: "Save signed-in runs with output, errors, language, and source code for later reference.",
   },
   {
-    icon: Boxes,
-    label: "Unlimited Storage",
-    desc: "Store unlimited snippets and projects",
+    icon: Library,
+    label: "Snippet Workflow",
+    desc: "Share snippets, star useful examples, and fork community code back into the editor.",
   },
 ];
 
 export const FEATURES = {
-  development: [
-    "Advanced AI",
-    "Custom theme builder",
-    "Integrated debugging tools",
-    "Multi-language support",
+  editor: [
+    "Unlock 8 additional languages",
+    "Theme and font-size preferences",
+    "Readable output and error history",
+    "Mobile-friendly editor controls",
   ],
-  collaboration: [
-    "Real-time pair programming",
-    "Team workspaces",
-    "Version control integration",
-    "Code review tools",
+  snippets: [
+    "Public snippet sharing",
+    "Fork snippets into the editor",
+    "Star and collect examples",
+    "Quality-focused community browsing",
   ],
-  deployment: [
-    "One-click deployment",
-    "CI/CD integration",
-    "Container support",
-    "Custom domain mapping",
+  workspace: [
+    "Saved execution history",
+    "Language-aware starter code",
+    "Persistent editor drafts",
+    "Priority for upcoming editor upgrades",
   ],
 };

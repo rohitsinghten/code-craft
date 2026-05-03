@@ -38,12 +38,12 @@ async function PricingPage() {
                 className="relative text-5xl md:text-6xl lg:text-7xl font-semibold bg-gradient-to-r
                from-gray-100 to-gray-300 text-transparent bg-clip-text mb-8"
               >
-                Elevate Your <br />
-                Development Experience
+                Upgrade Your <br />
+                CodeCraft Workspace
               </h1>
             </div>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              Join the next generation of developers with our professional suite of tools
+              Unlock the full language set, saved execution history, and a sharper snippet workflow.
             </p>
           </div>
 
@@ -97,25 +97,27 @@ async function PricingPage() {
                     </span>
                     <span className="text-xl text-gray-400">one-time</span>
                   </div>
-                  <p className="text-gray-400 text-lg">Unlock the full potential of CodeCraft</p>
+                  <p className="text-gray-400 text-lg">
+                    JavaScript and Python stay free. Pro is for the rest of the editor workflow.
+                  </p>
                 </div>
 
                 {/* Features grid */}
                 <div className="grid md:grid-cols-3 gap-12 mb-12">
-                  <FeatureCategory label="Development">
-                    {FEATURES.development.map((feature, idx) => (
+                  <FeatureCategory label="Editor">
+                    {FEATURES.editor.map((feature, idx) => (
                       <FeatureItem key={idx}>{feature}</FeatureItem>
                     ))}
                   </FeatureCategory>
 
-                  <FeatureCategory label="Collaboration">
-                    {FEATURES.collaboration.map((feature, idx) => (
+                  <FeatureCategory label="Snippets">
+                    {FEATURES.snippets.map((feature, idx) => (
                       <FeatureItem key={idx}>{feature}</FeatureItem>
                     ))}
                   </FeatureCategory>
 
-                  <FeatureCategory label="Deployment">
-                    {FEATURES.deployment.map((feature, idx) => (
+                  <FeatureCategory label="Workspace">
+                    {FEATURES.workspace.map((feature, idx) => (
                       <FeatureItem key={idx}>{feature}</FeatureItem>
                     ))}
                   </FeatureCategory>

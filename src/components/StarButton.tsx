@@ -16,10 +16,20 @@ function StarButton({ snippetId }: { snippetId: Id<"snippets"> }) {
     await star({ snippetId });
   };
 
+  const count = starCount ?? 0;
+  const label = !isSignedIn
+    ? `Sign in to star snippet. ${count} stars`
+    : isStarred
+      ? `Unstar snippet. ${count} stars`
+      : `Star snippet. ${count} stars`;
+
   return (
     <button
+      type="button"
+      aria-label={label}
+      aria-pressed={Boolean(isStarred)}
       className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-lg 
-    transition-all duration-200 ${
+    transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400/70 ${
       isStarred
         ? "bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20"
         : "bg-gray-500/10 text-gray-400 hover:bg-gray-500/20"
@@ -30,7 +40,7 @@ function StarButton({ snippetId }: { snippetId: Id<"snippets"> }) {
         className={`w-4 h-4 ${isStarred ? "fill-yellow-500" : "fill-none group-hover:fill-gray-400"}`}
       />
       <span className={`text-xs font-medium ${isStarred ? "text-yellow-500" : "text-gray-400"}`}>
-        {starCount}
+        {count}
       </span>
     </button>
   );

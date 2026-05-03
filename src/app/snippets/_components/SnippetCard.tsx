@@ -51,7 +51,7 @@ function SnippetCard({ snippet }: { snippet: Snippet }) {
                   <div
                     className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg blur opacity-20 
                   group-hover:opacity-30 transition-all duration-500"
-                    area-hidden="true"
+                    aria-hidden="true"
                   />
                   <div
                     className="relative p-2 rounded-lg bg-gradient-to-br from-blue-500/10 to-purple-500/10 group-hover:from-blue-500/20
@@ -85,9 +85,12 @@ function SnippetCard({ snippet }: { snippet: Snippet }) {
                 {user?.id === snippet.userId && (
                   <div className="z-10" onClick={(e) => e.preventDefault()}>
                     <button
+                      type="button"
+                      aria-label={`Delete snippet ${snippet.title}`}
                       onClick={handleDelete}
                       disabled={isDeleting}
                       className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-200
+                                  focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70
                                   ${
                                     isDeleting
                                       ? "bg-red-500/20 text-red-400 cursor-not-allowed"

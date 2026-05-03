@@ -9,7 +9,7 @@ import { api } from "../../../../convex/_generated/api";
 
 function RunButton() {
   const { user } = useUser();
-  const { runCode, language, isRunning } = useCodeEditorStore();
+  const { runCode, language, isRunning, editor } = useCodeEditorStore();
   const saveExecution = useMutation(api.codeExecutions.saveExecution);
 
   const handleRun = async () => {
@@ -29,13 +29,14 @@ function RunButton() {
   return (
     <motion.button
       onClick={handleRun}
-      disabled={isRunning}
+      disabled={isRunning || !editor}
+      aria-label={isRunning ? "Executing code" : "Run Code"}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className={`
-        group relative inline-flex h-11 shrink-0 items-center gap-2.5 whitespace-nowrap px-4 sm:px-5 py-2.5
+        group relative inline-flex h-10 shrink-0 items-center gap-2.5 whitespace-nowrap px-3 sm:h-11 sm:px-5 py-2.5
         disabled:cursor-not-allowed
-        focus:outline-none
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300
       `}
     >
       {/* bg wit gradient */}
@@ -56,7 +57,8 @@ function RunButton() {
               <Play className="w-4 h-4 text-white/90 transition-transform group-hover:scale-110 group-hover:text-white" />
             </div>
             <span className="text-sm font-medium leading-none text-white/90 group-hover:text-white">
-              Run Code
+              <span className="hidden sm:inline">Run Code</span>
+              <span className="sm:hidden">Run</span>
             </span>
           </>
         )}

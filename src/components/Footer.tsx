@@ -12,13 +12,22 @@ function Footer() {
             <span>Built for developers, by developers</span>
           </div>
           <div className="flex items-center gap-6">
-            <Link href="/support" className="text-gray-400 hover:text-gray-300 transition-colors">
+            <Link
+              href="/support"
+              className="text-gray-400 hover:text-gray-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 rounded"
+            >
               Support
             </Link>
-            <Link href="/privacy" className="text-gray-400 hover:text-gray-300 transition-colors">
+            <Link
+              href="/privacy"
+              className="text-gray-400 hover:text-gray-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 rounded"
+            >
               Privacy
             </Link>
-            <Link href="/terms" className="text-gray-400 hover:text-gray-300 transition-colors">
+            <Link
+              href="/terms"
+              className="text-gray-400 hover:text-gray-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 rounded"
+            >
               Terms
             </Link>
           </div>

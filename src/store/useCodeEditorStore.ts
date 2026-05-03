@@ -1,7 +1,8 @@
 import { CodeEditorState } from "./../types/index";
-import { LANGUAGE_CONFIG } from "@/app/(root)/_constants";
+import { LANGUAGE_CONFIG, MAX_CODE_LENGTH, isSupportedLanguage } from "@/lib/editor-config";
 import { create } from "zustand";
 import { Monaco } from "@monaco-editor/react";
+import { io } from "socket.io-client";
 
 const runJavaScriptLocally = (code: string) =>
   new Promise<{ output: string; error: string | null }>((resolve) => {
@@ -62,6 +63,67 @@ const runJavaScriptLocally = (code: string) =>
     worker.postMessage(code);
   });
 
+type OnlineCompilerSocketResult = {
+  output?: string;
+  error?: string;
+  status?: string;
+  exit_code?: number;
+};
+
+const runWithOnlineCompilerSocket = (compiler: string, code: string) =>
+  new Promise<{ output: string; error: string | null }>((resolve, reject) => {
+    const apiKey = process.env.NEXT_PUBLIC_ONLINECOMPILER_WS_KEY;
+
+    if (!apiKey) {
+      reject(new Error("OnlineCompiler WebSocket key is not configured."));
+      return;
+    }
+
+    const socket = io("wss://api.onlinecompiler.io", {
+      auth: { token: apiKey },
+      transports: ["websocket"],
+      reconnection: false,
+      timeout: 2500,
+    });
+
+    const timeout = window.setTimeout(() => {
+      socket.disconnect();
+      reject(new Error("OnlineCompiler WebSocket execution timed out."));
+    }, 6000);
+
+    const finish = (result: { output: string; error: string | null }) => {
+      window.clearTimeout(timeout);
+      socket.disconnect();
+      resolve(result);
+    };
+
+    socket.on("connect", () => {
+      socket.emit("runcode", {
+        api_key: apiKey,
+        compiler,
+        code,
+        input: "",
+      });
+    });
+
+    socket.on("connect_error", (error) => {
+      window.clearTimeout(timeout);
+      socket.disconnect();
+      reject(error);
+    });
+
+    socket.on("codeoutput", (result: OnlineCompilerSocketResult) => {
+      const output = result.output ?? "";
+      const error = result.error ?? "";
+      const exitCode = result.exit_code ?? (result.status === "success" ? 0 : 1);
+
+      finish({
+        output: output.trim(),
+        error: exitCode === 0 ? null : error || output || "Execution failed",
+      });
+    });
+  });
+
 const getInitialState = () => {
   // if we're on the server, return default values
   if (typeof window === "undefined") {
@@ -78,7 +140,7 @@ const getInitialState = () => {
   const savedFontSize = localStorage.getItem("editor-font-size") || 16;
 
   return {
-    language: savedLanguage,
+    language: isSupportedLanguage(savedLanguage) ? savedLanguage : "javascript",
     theme: savedTheme,
     fontSize: Number(savedFontSize),
   };
@@ -130,12 +192,44 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
       });
     },
 
+    loadSnippetIntoEditor: (language: string, code: string) => {
+      if (!isSupportedLanguage(language)) return;
+
+      const currentCode = get().editor?.getValue();
+      if (currentCode) {
+        localStorage.setItem(`editor-code-${get().language}`, currentCode);
+      }
+
+      localStorage.setItem("editor-language", language);
+      localStorage.setItem(`editor-code-${language}`, code);
+
+      get().editor?.setValue(code);
+
+      set({
+        language,
+        output: "",
+        error: null,
+        executionResult: null,
+      });
+    },
+
     runCode: async () => {
-      const { language, getCode } = get();
+      const { language, getCode, editor } = get();
+
+      if (!editor) {
+        set({ error: "Editor is still loading. Try again in a moment." });
+        return;
+      }
+
       const code = getCode();
 
       if (!code) {
         set({ error: "Please enter some code" });
+        return;
+      }
+
+      if (code.length > MAX_CODE_LENGTH) {
+        set({ error: `Code must be ${MAX_CODE_LENGTH} characters or less` });
         return;
       }
 
@@ -162,7 +256,33 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
           return;
         }
 
-        const runtime = LANGUAGE_CONFIG[language].pistonRuntime;
+        const languageConfig = LANGUAGE_CONFIG[language];
+
+        if (languageConfig.onlineCompilerId && process.env.NEXT_PUBLIC_ONLINECOMPILER_WS_KEY) {
+          try {
+            const result = await runWithOnlineCompilerSocket(languageConfig.onlineCompilerId, code);
+
+            if (result.error) {
+              set({
+                error: result.error,
+                output: result.output,
+                executionResult: { code, output: result.output, error: result.error },
+              });
+              return;
+            }
+
+            set({
+              output: result.output,
+              error: null,
+              executionResult: { code, output: result.output, error: null },
+            });
+            return;
+          } catch (error) {
+            console.warn("OnlineCompiler WebSocket failed; falling back to API route:", error);
+          }
+        }
+
+        const runtime = languageConfig.pistonRuntime;
         const response = await fetch("/api/execute", {
           method: "POST",
           headers: {
@@ -175,7 +295,10 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
           }),
         });
 
-        const data = await response.json();
+        const responseText = await response.text();
+        const data = responseText
+          ? JSON.parse(responseText)
+          : { message: "Code execution failed with an empty server response." };
 
         console.log("data back from code execution API:", data);
 

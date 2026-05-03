@@ -24,7 +24,7 @@ function OutputPanel({ className = "" }: OutputPanelProps) {
   };
 
   return (
-    <div className={`relative flex flex-col bg-[#181825] rounded-xl p-4 ring-1 ring-gray-800/50 ${className}`}>
+    <div className={`relative flex min-w-0 flex-col bg-[#181825] rounded-xl p-3 ring-1 ring-gray-800/50 sm:p-4 ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -37,8 +37,10 @@ function OutputPanel({ className = "" }: OutputPanelProps) {
         {hasContent && (
           <button
             onClick={handleCopy}
+            type="button"
+            aria-label="Copy output"
             className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-gray-400 hover:text-gray-300 bg-[#1e1e2e] 
-            rounded-lg ring-1 ring-gray-800/50 hover:ring-gray-700/50 transition-all"
+            rounded-lg ring-1 ring-gray-800/50 hover:ring-gray-700/50 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70"
           >
             {isCopied ? (
               <>
@@ -56,7 +58,7 @@ function OutputPanel({ className = "" }: OutputPanelProps) {
       </div>
 
       {/* Output Area */}
-      <div className="relative min-h-[600px] flex-1">
+      <div className="relative min-h-[300px] flex-1 sm:min-h-[600px]">
         <div
           className="relative bg-[#1e1e2e]/50 backdrop-blur-sm border border-[#313244] 
         rounded-xl p-4 h-full overflow-auto font-mono text-sm"

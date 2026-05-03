@@ -20,6 +20,12 @@ export default defineSchema({
     error: v.optional(v.string()),
   }).index("by_user_id", ["userId"]),
 
+  executionRateLimits: defineTable({
+    key: v.string(),
+    windowStart: v.number(),
+    count: v.number(),
+  }).index("by_key", ["key"]),
+
   snippets: defineTable({
     userId: v.string(),
     title: v.string(),
