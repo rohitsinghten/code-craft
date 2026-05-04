@@ -60,19 +60,17 @@ function LanguageSelector({ hasAccess }: { hasAccess: boolean }) {
         aria-haspopup="menu"
         aria-expanded={isOpen}
         aria-label="Select programming language"
-        className={`group relative flex w-full min-w-0 items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 bg-[#1e1e2e]/80
-      rounded-lg transition-all
-       duration-200 border border-gray-800/50 hover:border-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70
+        className={`group relative flex h-11 w-full min-w-0 items-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#171827]/90 px-3 text-gray-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]
+      transition-all duration-200 hover:border-blue-400/30 hover:bg-[#202235] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 sm:w-[222px] sm:px-4
        ${!hasAccess && !isFreeLanguage(language) ? "opacity-50 cursor-not-allowed" : ""}`}
       >
         {/* Decoration */}
         <div
-          className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/5 
-        rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+          className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"
           aria-hidden="true"
         />
 
-        <div className="size-6 rounded-md bg-gray-800/50 p-0.5 group-hover:scale-110 transition-transform">
+        <div className="relative z-10 grid size-7 place-items-center rounded-lg bg-white/[0.05] p-1 ring-1 ring-white/[0.06] transition-transform group-hover:scale-105">
           <Image
             src={currentLanguageObj.logoPath}
             alt="programming language logo"
@@ -82,12 +80,12 @@ function LanguageSelector({ hasAccess }: { hasAccess: boolean }) {
           />
         </div>
 
-        <span className="min-w-0 flex-1 truncate text-left text-sm text-gray-200 group-hover:text-white transition-colors sm:min-w-[80px]">
+        <span className="relative z-10 min-w-0 flex-1 truncate text-left text-sm font-medium leading-none text-gray-200 group-hover:text-white transition-colors">
           {currentLanguageObj.label}
         </span>
 
         <ChevronDownIcon
-          className={`size-4 text-gray-400 transition-all duration-300 group-hover:text-gray-300
+          className={`relative z-10 size-4 text-gray-400 transition-all duration-300 group-hover:text-gray-200
             ${isOpen ? "rotate-180" : ""}`}
         />
       </motion.button>

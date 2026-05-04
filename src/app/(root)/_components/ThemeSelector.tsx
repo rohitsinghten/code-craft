@@ -54,22 +54,22 @@ function ThemeSelector() {
         aria-haspopup="menu"
         aria-expanded={isOpen}
         aria-label="Select editor theme"
-        className="group relative flex w-full min-w-0 items-center gap-2 px-3 sm:px-4 py-2.5 bg-[#1e1e2e]/80 hover:bg-[#262637]
-        rounded-lg transition-all duration-200 border border-gray-800/50 hover:border-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 sm:w-48"
+        className="group relative flex h-11 w-full min-w-0 items-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#171827]/90 px-3 text-gray-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]
+        transition-all duration-200 hover:border-blue-400/30 hover:bg-[#202235] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 sm:w-[240px] sm:px-4"
       >
         {/* hover state bg decorator */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
 
-        <Palette className="w-4 h-4 text-gray-400 group-hover:text-gray-300 transition-colors" />
+        <Palette className="relative z-10 size-4 text-gray-400 group-hover:text-gray-200 transition-colors" />
 
-        <span className="min-w-0 flex-1 truncate text-left text-sm text-gray-300 group-hover:text-white transition-colors">
+        <span className="relative z-10 min-w-0 flex-1 truncate text-left text-sm font-medium leading-none text-gray-300 group-hover:text-white transition-colors">
           {currentTheme?.label}
         </span>
 
         {/* color indicator */}
 
         <div
-          className="relative w-4 h-4 rounded-full border border-gray-600 group-hover:border-gray-500 transition-colors"
+          className="relative z-10 size-5 rounded-full border border-white/20 shadow-inner transition-colors group-hover:border-white/35"
           style={{ background: currentTheme?.color }}
         />
       </motion.button>

@@ -5,7 +5,7 @@ import { defineMonacoThemes, LANGUAGE_CONFIG } from "@/lib/editor-config";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { RotateCcwIcon, ShareIcon, TypeIcon } from "lucide-react";
+import { CheckCircle, Copy, RotateCcwIcon, ShareIcon, TypeIcon } from "lucide-react";
 import { useClerk, useUser } from "@clerk/nextjs";
 import { EditorPanelSkeleton } from "./EditorPanelSkeleton";
 import useMounted from "@/hooks/useMounted";
@@ -24,6 +24,7 @@ function EditorPanel({ className = "" }: EditorPanelProps) {
   const clerk = useClerk();
   const { isSignedIn } = useUser();
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [isCodeCopied, setIsCodeCopied] = useState(false);
   const { language, theme, fontSize, editor, setFontSize, setEditor, runCode } =
     useCodeEditorStore();
 
@@ -75,6 +76,14 @@ function EditorPanel({ className = "" }: EditorPanelProps) {
     setIsShareDialogOpen(true);
   };
 
+  const handleCopyCode = async () => {
+    if (!editor) return;
+
+    await navigator.clipboard.writeText(editor.getValue());
+    setIsCodeCopied(true);
+    window.setTimeout(() => setIsCodeCopied(false), 2000);
+  };
+
   if (!mounted) {
     return (
       <div className={`relative min-w-0 ${className}`}>
@@ -99,7 +108,7 @@ function EditorPanel({ className = "" }: EditorPanelProps) {
               <p className="truncate text-xs text-gray-500">Write and execute your code</p>
             </div>
           </div>
-          <div className="grid w-full grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2 sm:flex sm:w-auto sm:gap-3">
+          <div className="grid w-full grid-cols-[minmax(0,1fr)_auto_auto_auto] items-center gap-2 sm:flex sm:w-auto sm:gap-3">
             {/* Font Size Slider */}
             <label className="flex min-w-0 items-center gap-2 px-2.5 sm:px-3 py-2 bg-[#1e1e2e] rounded-lg ring-1 ring-white/5">
               <TypeIcon className="size-4 text-gray-400" />
@@ -127,6 +136,33 @@ function EditorPanel({ className = "" }: EditorPanelProps) {
               aria-label="Reset to default code"
             >
               <RotateCcwIcon className="size-4 text-gray-400" />
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleCopyCode}
+              disabled={!editor}
+              aria-label={isCodeCopied ? "Editor code copied" : "Copy editor code"}
+              title={isCodeCopied ? "Copied!" : "Copy code"}
+              className={`inline-flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-[#1e1e2e] ring-1 transition-colors
+              hover:bg-[#2a2a3a] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 disabled:cursor-not-allowed disabled:opacity-50 2xl:w-24 2xl:px-3 ${
+                isCodeCopied
+                  ? "text-emerald-300 ring-emerald-400/30 hover:text-emerald-200"
+                  : "text-gray-400 ring-white/5 hover:text-gray-200"
+              }`}
+            >
+              {isCodeCopied ? (
+                <>
+                  <CheckCircle className="size-4" />
+                  <span className="hidden text-sm font-medium 2xl:inline">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="size-4" />
+                  <span className="hidden text-sm font-medium 2xl:inline">Copy</span>
+                </>
+              )}
             </motion.button>
 
             {/* Share Button */}

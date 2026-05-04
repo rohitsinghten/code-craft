@@ -9,7 +9,7 @@ function HeaderProfileBtn() {
   if (!isSignedIn) return <LoginButton />;
 
   return (
-    <div>
+    <div className="flex h-11 items-center">
       <UserButton>
         <UserButton.MenuItems>
           <UserButton.Link

@@ -1,0 +1,166 @@
+"use client";
+
+import { useUser } from "@clerk/nextjs";
+import { useQuery } from "convex/react";
+import { Loader2, Star } from "lucide-react";
+import { api } from "../../../../convex/_generated/api";
+import LoginButton from "@/components/LoginButton";
+import NavigationHeader from "@/components/NavigationHeader";
+import { ENTERPRISE_FEATURES, FEATURES } from "../_constants";
+import FeatureCategory from "./FeatureCategory";
+import FeatureItem from "./FeatureItem";
+import ProPlanView from "./ProPlanView";
+import UpgradeButton from "./UpgradeButton";
+
+type PricingCtaProps = {
+  isCheckingAccount: boolean;
+  isSignedIn?: boolean;
+};
+
+function PricingCta({ isCheckingAccount, isSignedIn }: PricingCtaProps) {
+  if (isCheckingAccount) {
+    return (
+      <button
+        type="button"
+        disabled
+        className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-500/10 px-8 py-4 text-gray-300 ring-1 ring-blue-400/20"
+      >
+        <Loader2 className="size-5 animate-spin text-blue-300" />
+        Checking account...
+      </button>
+    );
+  }
+
+  if (isSignedIn) return <UpgradeButton />;
+
+  return <LoginButton />;
+}
+
+function PricingPageClient() {
+  const { isLoaded, isSignedIn } = useUser();
+  const convexUser = useQuery(api.users.getCurrentUser, isSignedIn ? {} : "skip");
+  const isCheckingAccount = !isLoaded || (isSignedIn && convexUser === undefined);
+
+  if (convexUser?.isPro) return <ProPlanView />;
+
+  return (
+    <div
+      className="relative min-h-screen bg-[#0a0a0f] selection:bg-blue-500/20
+     selection:text-blue-200"
+    >
+      <NavigationHeader />
+
+      {/* main content */}
+
+      <main className="relative pt-32 pb-24 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Hero   */}
+          <div className="text-center mb-24">
+            <div className="relative inline-block">
+              <div className="absolute -inset-px bg-gradient-to-r from-blue-500 to-purple-500 blur-xl opacity-10" />
+              <h1
+                className="relative text-5xl md:text-6xl lg:text-7xl font-semibold bg-gradient-to-r
+               from-gray-100 to-gray-300 text-transparent bg-clip-text mb-8"
+              >
+                Upgrade Your <br />
+                CodeCraft Workspace
+              </h1>
+            </div>
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              Unlock the full language set, saved execution history, and a sharper snippet workflow.
+            </p>
+          </div>
+
+          {/* Enterprise Features */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-24">
+            {ENTERPRISE_FEATURES.map((feature) => (
+              <div
+                key={feature.label}
+                className="group relative bg-gradient-to-b from-[#12121a] to-[#0a0a0f] rounded-2xl p-6 hover:transform hover:scale-[1.02] transition-all duration-300"
+              >
+                <div className="relative">
+                  <div
+                    className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 
+                  flex items-center justify-center mb-4 ring-1 ring-gray-800/60 group-hover:ring-blue-500/20"
+                  >
+                    <feature.icon className="w-6 h-6 text-blue-400" />
+                  </div>
+
+                  <h3 className="text-lg font-medium text-white mb-2">{feature.label}</h3>
+                  <p className="text-gray-400">{feature.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Pricing Card */}
+
+          <div className="relative max-w-4xl mx-auto">
+            <div
+              className="absolute -inset-px bg-gradient-to-r from-blue-500
+             to-purple-500 rounded-2xl blur opacity-10"
+            />
+            <div className="relative bg-[#12121a]/90 backdrop-blur-xl rounded-2xl">
+              <div
+                className="absolute inset-x-0 -top-px h-px bg-gradient-to-r 
+              from-transparent via-blue-500/50 to-transparent"
+              />
+              <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
+
+              <div className="relative p-8 md:p-12">
+                {/* header */}
+                <div className="text-center mb-12">
+                  <div className="inline-flex p-3 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 ring-1 ring-gray-800/60 mb-6">
+                    <Star className="w-8 h-8 text-blue-400" />
+                  </div>
+                  <h2 className="text-3xl font-semibold text-white mb-4">Lifetime Pro Access</h2>
+                  <div className="flex items-baseline justify-center gap-2 mb-4">
+                    <span className="text-2xl text-gray-400">$</span>
+                    <span className="text-6xl font-semibold bg-gradient-to-r from-gray-100 to-gray-300 text-transparent bg-clip-text">
+                      39
+                    </span>
+                    <span className="text-xl text-gray-400">one-time</span>
+                  </div>
+                  <p className="text-gray-400 text-lg">
+                    JavaScript and Python stay free. Pro is for the rest of the editor workflow.
+                  </p>
+                </div>
+
+                {/* Features grid */}
+                <div className="grid md:grid-cols-3 gap-12 mb-12">
+                  <FeatureCategory label="Editor">
+                    {FEATURES.editor.map((feature) => (
+                      <FeatureItem key={feature}>{feature}</FeatureItem>
+                    ))}
+                  </FeatureCategory>
+
+                  <FeatureCategory label="Snippets">
+                    {FEATURES.snippets.map((feature) => (
+                      <FeatureItem key={feature}>{feature}</FeatureItem>
+                    ))}
+                  </FeatureCategory>
+
+                  <FeatureCategory label="Workspace">
+                    {FEATURES.workspace.map((feature) => (
+                      <FeatureItem key={feature}>{feature}</FeatureItem>
+                    ))}
+                  </FeatureCategory>
+                </div>
+
+                {/* CTA */}
+                <div className="flex justify-center">
+                  <PricingCta
+                    isCheckingAccount={isCheckingAccount}
+                    isSignedIn={isSignedIn}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default PricingPageClient;
