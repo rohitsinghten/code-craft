@@ -1,11 +1,29 @@
 "use client";
 
+import { recordRunAchievements, type RunAchievement } from "@/lib/achievements";
 import { getExecutionResult, useCodeEditorStore } from "@/store/useCodeEditorStore";
 import { useUser } from "@clerk/nextjs";
 import { useMutation } from "convex/react";
-import { motion } from "framer-motion";
 import { Loader2, Play } from "lucide-react";
+import toast from "react-hot-toast";
 import { api } from "../../../../convex/_generated/api";
+
+function showAchievementToasts(achievements: RunAchievement[]) {
+  achievements.forEach((achievement, index) => {
+    window.setTimeout(() => {
+      toast.success(
+        <div>
+          <p className="font-medium">{achievement.title}</p>
+          <p className="text-sm text-gray-500">{achievement.description}</p>
+        </div>,
+        {
+          id: achievement.id,
+          duration: 4200,
+        }
+      );
+    }, index * 500);
+  });
+}
 
 function RunButton() {
   const { user } = useUser();
@@ -16,7 +34,17 @@ function RunButton() {
     await runCode();
     const result = getExecutionResult();
 
-    if (user && result) {
+    if (!result) return;
+
+    showAchievementToasts(
+      recordRunAchievements({
+        language,
+        code: result.code,
+        error: result.error,
+      })
+    );
+
+    if (user) {
       await saveExecution({
         language,
         code: result.code,
@@ -27,14 +55,12 @@ function RunButton() {
   };
 
   return (
-    <motion.button
+    <button
       onClick={handleRun}
       disabled={isRunning || !editor}
       aria-label={isRunning ? "Executing code" : "Run Code"}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
       className={`
-        group relative inline-flex h-11 shrink-0 items-center gap-2.5 whitespace-nowrap rounded-xl px-4 sm:px-5
+        group relative inline-flex h-11 w-[5.75rem] shrink-0 items-center justify-center gap-2.5 whitespace-nowrap rounded-xl px-4 sm:w-[8.5rem] sm:px-5
         disabled:cursor-not-allowed disabled:opacity-70
         focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300
       `}
@@ -49,7 +75,10 @@ function RunButton() {
               <Loader2 className="w-4 h-4 animate-spin text-white/70" />
               <div className="absolute inset-0 blur animate-pulse" />
             </div>
-            <span className="text-sm font-medium text-white/90">Executing...</span>
+            <span className="text-sm font-medium leading-none text-white/90">
+              <span className="hidden sm:inline">Executing</span>
+              <span className="sm:hidden">Run</span>
+            </span>
           </>
         ) : (
           <>
@@ -63,7 +92,7 @@ function RunButton() {
           </>
         )}
       </div>
-    </motion.button>
+    </button>
   );
 }
 export default RunButton;

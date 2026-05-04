@@ -9,10 +9,14 @@ test("home loads the editor shell and can run JavaScript", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Select editor theme" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Select programming language" })).toBeVisible();
   await expect(page.getByText("Output", { exact: true })).toBeVisible();
+  await expect(page.getByText("No output yet")).toBeVisible();
+  await expect(page.getByText(/stdout is pretending not to care/)).toBeVisible();
   await expect(page.getByRole("button", { name: "Run Code" })).toBeEnabled();
 
   await page.getByRole("button", { name: "Run Code" }).click();
   await expect(page.getByText("Execution Successful")).toBeVisible();
+  await expect(page.getByText("It ran. Try not to look too powerful.")).toBeVisible();
+  await expect(page.getByText(/Tiny Cafe queue:/)).toBeVisible();
 });
 
 test("mobile home keeps the brand, nav, and editor controls in view", async ({ page }) => {

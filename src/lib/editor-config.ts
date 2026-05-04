@@ -23,21 +23,24 @@ export const LANGUAGE_CONFIG: LanguageConfig = {
     pistonRuntime: { language: "javascript", version: "18.15.0" }, // api that we're gonna be using
     judge0LanguageId: 93,
     monacoLanguage: "javascript",
-    defaultCode: `// JavaScript Playground
-const numbers = [1, 2, 3, 4, 5];
+    defaultCode: `// Tiny Cafe Queue
+const orders = [
+  { name: "Ari", drink: "oat latte", patience: 2, shots: 2 },
+  { name: "Bo", drink: "cold brew", patience: 5, shots: 3 },
+  { name: "Cy", drink: "matcha", patience: 1, shots: 0 },
+  { name: "Dee", drink: "espresso", patience: 3, shots: 1 },
+];
 
-// Map numbers to their squares
-const squares = numbers.map(n => n * n);
-console.log('Original numbers:', numbers);
-console.log('Squared numbers:', squares);
+const queue = [...orders]
+  .sort((a, b) => a.patience - b.patience)
+  .map(order => \`\${order.name}: \${order.drink}\`);
 
-// Filter for even numbers
-const evenNumbers = numbers.filter(n => n % 2 === 0);
-console.log('Even numbers:', evenNumbers);
+const highDramaOrders = orders.filter(order => order.patience <= 2);
+const totalShots = orders.reduce((sum, order) => sum + order.shots, 0);
 
-// Calculate sum using reduce
-const sum = numbers.reduce((acc, curr) => acc + curr, 0);
-console.log('Sum of numbers:', sum);`,
+console.log("Tiny Cafe queue:", queue.join(" -> "));
+console.log("Needs coffee immediately:", highDramaOrders.map(order => order.name).join(", "));
+console.log("Total espresso shots:", totalShots);`,
   },
   typescript: {
     id: "typescript",
@@ -47,36 +50,29 @@ console.log('Sum of numbers:', sum);`,
     judge0LanguageId: 94,
     onlineCompilerId: "typescript-deno",
     monacoLanguage: "typescript",
-    defaultCode: `// TypeScript Playground
-interface NumberArray {
-  numbers: number[];
-  sum(): number;
-  squares(): number[];
-  evenNumbers(): number[];
-}
+    defaultCode: `// TypeScript Playlist Triage
+type Track = {
+  title: string;
+  bpm: number;
+  skipRisk: "low" | "medium" | "high";
+};
 
-class MathOperations implements NumberArray {
-  constructor(public numbers: number[]) {}
+const playlist: Track[] = [
+  { title: "Soft Launch Synth", bpm: 88, skipRisk: "low" },
+  { title: "Bug Fix Boogie", bpm: 124, skipRisk: "medium" },
+  { title: "Deploy Button Disco", bpm: 132, skipRisk: "high" },
+  { title: "Refactor Rain", bpm: 96, skipRisk: "low" },
+];
 
-  sum(): number {
-    return this.numbers.reduce((acc, curr) => acc + curr, 0);
-  }
+const warmupOrder = [...playlist].sort((a, b) => a.bpm - b.bpm);
+const riskyTracks = playlist.filter(track => track.skipRisk === "high");
+const averageBpm = Math.round(
+  playlist.reduce((sum, track) => sum + track.bpm, 0) / playlist.length
+);
 
-  squares(): number[] {
-    return this.numbers.map(n => n * n);
-  }
-
-  evenNumbers(): number[] {
-    return this.numbers.filter(n => n % 2 === 0);
-  }
-}
-
-const math = new MathOperations([1, 2, 3, 4, 5]);
-
-console.log('Original numbers:', math.numbers);
-console.log('Squared numbers:', math.squares());
-console.log('Even numbers:', math.evenNumbers());
-console.log('Sum of numbers:', math.sum());`,
+console.log("Warm-up order:", warmupOrder.map(track => track.title).join(" -> "));
+console.log("High skip risk:", riskyTracks.map(track => track.title).join(", "));
+console.log("Average BPM:", averageBpm);`,
   },
   python: {
     id: "python",
@@ -86,21 +82,21 @@ console.log('Sum of numbers:', math.sum());`,
     judge0LanguageId: 92,
     onlineCompilerId: "python-3.14",
     monacoLanguage: "python",
-    defaultCode: `# Python Playground
-numbers = [1, 2, 3, 4, 5]
+    defaultCode: `# Tiny Cafe Queue
+orders = [
+    {"name": "Ari", "drink": "oat latte", "patience": 2, "shots": 2},
+    {"name": "Bo", "drink": "cold brew", "patience": 5, "shots": 3},
+    {"name": "Cy", "drink": "matcha", "patience": 1, "shots": 0},
+    {"name": "Dee", "drink": "espresso", "patience": 3, "shots": 1},
+]
 
-# Map numbers to their squares
-squares = [n ** 2 for n in numbers]
-print(f"Original numbers: {numbers}")
-print(f"Squared numbers: {squares}")
+queue = sorted(orders, key=lambda order: order["patience"])
+urgent = [order["name"] for order in orders if order["patience"] <= 2]
+total_shots = sum(order["shots"] for order in orders)
 
-# Filter for even numbers
-even_numbers = [n for n in numbers if n % 2 == 0]
-print(f"Even numbers: {even_numbers}")
-
-# Calculate sum
-numbers_sum = sum(numbers)
-print(f"Sum of numbers: {numbers_sum}")`,
+print("Tiny Cafe queue:", " -> ".join(order["name"] for order in queue))
+print("Needs coffee immediately:", ", ".join(urgent))
+print(f"Total espresso shots: {total_shots}")`,
   },
   java: {
     id: "java",
@@ -110,39 +106,49 @@ print(f"Sum of numbers: {numbers_sum}")`,
     judge0LanguageId: 91,
     onlineCompilerId: "openjdk-25",
     monacoLanguage: "java",
-    defaultCode: `public class Main {
-  public static void main(String[] args) {
-      // Create array
-      int[] numbers = {1, 2, 3, 4, 5};
-      
-      // Print original numbers
-      System.out.print("Original numbers: ");
-      printArray(numbers);
-      
-      // Calculate and print squares
-      int[] squares = new int[numbers.length];
-      for (int i = 0; i < numbers.length; i++) {
-          squares[i] = numbers[i] * numbers[i];
-      }
-      System.out.print("Squared numbers: ");
-      printArray(squares);
-      
-      // Print even numbers
-      System.out.print("Even numbers: ");
-      for (int n : numbers) {
-          if (n % 2 == 0) System.out.print(n + " ");
-      }
-      System.out.println();
-      
-      // Calculate and print sum
-      int sum = 0;
-      for (int n : numbers) sum += n;
-      System.out.println("Sum of numbers: " + sum);
+    defaultCode: `import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
+public class Main {
+  static class Order {
+    String name;
+    String drink;
+    int patience;
+    int shots;
+
+    Order(String name, String drink, int patience, int shots) {
+      this.name = name;
+      this.drink = drink;
+      this.patience = patience;
+      this.shots = shots;
+    }
   }
-  
-  private static void printArray(int[] arr) {
-      for (int n : arr) System.out.print(n + " ");
-      System.out.println();
+
+  public static void main(String[] args) {
+    List<Order> orders = Arrays.asList(
+      new Order("Ari", "oat latte", 2, 2),
+      new Order("Bo", "cold brew", 5, 3),
+      new Order("Cy", "matcha", 1, 0),
+      new Order("Dee", "espresso", 3, 1)
+    );
+
+    orders.sort(Comparator.comparingInt(order -> order.patience));
+
+    List<String> queue = new ArrayList<>();
+    List<String> urgent = new ArrayList<>();
+    int totalShots = 0;
+
+    for (Order order : orders) {
+      queue.add(order.name + ": " + order.drink);
+      totalShots += order.shots;
+      if (order.patience <= 2) urgent.add(order.name);
+    }
+
+    System.out.println("Tiny Cafe queue: " + String.join(" -> ", queue));
+    System.out.println("Needs coffee immediately: " + String.join(", ", urgent));
+    System.out.println("Total espresso shots: " + totalShots);
   }
 }`,
   },
@@ -156,37 +162,46 @@ print(f"Sum of numbers: {numbers_sum}")`,
     monacoLanguage: "go",
     defaultCode: `package main
 
-import "fmt"
+import (
+  "fmt"
+  "sort"
+  "strings"
+)
+
+type Order struct {
+  Name     string
+  Drink    string
+  Patience int
+  Shots    int
+}
 
 func main() {
-  // Create slice
-  numbers := []int{1, 2, 3, 4, 5}
-  
-  // Print original numbers
-  fmt.Println("Original numbers:", numbers)
-  
-  // Calculate squares
-  squares := make([]int, len(numbers))
-  for i, n := range numbers {
-      squares[i] = n * n
+  orders := []Order{
+    {"Ari", "oat latte", 2, 2},
+    {"Bo", "cold brew", 5, 3},
+    {"Cy", "matcha", 1, 0},
+    {"Dee", "espresso", 3, 1},
   }
-  fmt.Println("Squared numbers:", squares)
-  
-  // Filter even numbers
-  var evenNumbers []int
-  for _, n := range numbers {
-      if n%2 == 0 {
-          evenNumbers = append(evenNumbers, n)
-      }
+
+  sort.Slice(orders, func(i, j int) bool {
+    return orders[i].Patience < orders[j].Patience
+  })
+
+  queue := []string{}
+  urgent := []string{}
+  totalShots := 0
+
+  for _, order := range orders {
+    queue = append(queue, order.Name+": "+order.Drink)
+    totalShots += order.Shots
+    if order.Patience <= 2 {
+      urgent = append(urgent, order.Name)
+    }
   }
-  fmt.Println("Even numbers:", evenNumbers)
-  
-  // Calculate sum
-  sum := 0
-  for _, n := range numbers {
-      sum += n
-  }
-  fmt.Println("Sum of numbers:", sum)
+
+  fmt.Println("Tiny Cafe queue:", strings.Join(queue, " -> "))
+  fmt.Println("Needs coffee immediately:", strings.Join(urgent, ", "))
+  fmt.Println("Total espresso shots:", totalShots)
 }`,
   },
   rust: {
@@ -197,31 +212,37 @@ func main() {
     judge0LanguageId: 108,
     onlineCompilerId: "rust-1.93",
     monacoLanguage: "rust",
-    defaultCode: `fn main() {
-    // Create vector
-    let numbers = vec![1, 2, 3, 4, 5];
-    
-    // Print original numbers
-    println!("Original numbers: {:?}", numbers);
-    
-    // Calculate squares
-    let squares: Vec<i32> = numbers
+    defaultCode: `struct Order {
+    name: &'static str,
+    drink: &'static str,
+    patience: u8,
+    shots: u8,
+}
+
+fn main() {
+    let mut orders = vec![
+        Order { name: "Ari", drink: "oat latte", patience: 2, shots: 2 },
+        Order { name: "Bo", drink: "cold brew", patience: 5, shots: 3 },
+        Order { name: "Cy", drink: "matcha", patience: 1, shots: 0 },
+        Order { name: "Dee", drink: "espresso", patience: 3, shots: 1 },
+    ];
+
+    orders.sort_by_key(|order| order.patience);
+
+    let queue: Vec<String> = orders
         .iter()
-        .map(|&n| n * n)
+        .map(|order| format!("{}: {}", order.name, order.drink))
         .collect();
-    println!("Squared numbers: {:?}", squares);
-    
-    // Filter even numbers
-    let even_numbers: Vec<i32> = numbers
+    let urgent: Vec<&str> = orders
         .iter()
-        .filter(|&&n| n % 2 == 0)
-        .cloned()
+        .filter(|order| order.patience <= 2)
+        .map(|order| order.name)
         .collect();
-    println!("Even numbers: {:?}", even_numbers);
-    
-    // Calculate sum
-    let sum: i32 = numbers.iter().sum();
-    println!("Sum of numbers: {}", sum);
+    let total_shots: u8 = orders.iter().map(|order| order.shots).sum();
+
+    println!("Tiny Cafe queue: {}", queue.join(" -> "));
+    println!("Needs coffee immediately: {}", urgent.join(", "));
+    println!("Total espresso shots: {}", total_shots);
 }`,
   },
   cpp: {
@@ -232,41 +253,53 @@ func main() {
     judge0LanguageId: 105,
     onlineCompilerId: "g++-15",
     monacoLanguage: "cpp",
-    defaultCode: `#include <iostream>
+    defaultCode: `#include <algorithm>
+#include <iostream>
+#include <string>
 #include <vector>
-#include <algorithm>
-#include <numeric>
+
+struct Order {
+    std::string name;
+    std::string drink;
+    int patience;
+    int shots;
+};
+
+std::string join(const std::vector<std::string>& items, const std::string& separator) {
+    std::string result;
+    for (size_t i = 0; i < items.size(); ++i) {
+        result += items[i];
+        if (i + 1 < items.size()) result += separator;
+    }
+    return result;
+}
 
 int main() {
-    // Create vector
-    std::vector<int> numbers = {1, 2, 3, 4, 5};
-    
-    // Print original numbers
-    std::cout << "Original numbers: ";
-    for (int n : numbers) std::cout << n << " ";
-    std::cout << std::endl;
-    
-    // Calculate squares
-    std::vector<int> squares;
-    std::transform(numbers.begin(), numbers.end(), 
-                  std::back_inserter(squares),
-                  [](int n) { return n * n; });
-    
-    std::cout << "Squared numbers: ";
-    for (int n : squares) std::cout << n << " ";
-    std::cout << std::endl;
-    
-    // Filter even numbers
-    std::cout << "Even numbers: ";
-    for (int n : numbers) {
-        if (n % 2 == 0) std::cout << n << " ";
+    std::vector<Order> orders = {
+        {"Ari", "oat latte", 2, 2},
+        {"Bo", "cold brew", 5, 3},
+        {"Cy", "matcha", 1, 0},
+        {"Dee", "espresso", 3, 1},
+    };
+
+    std::sort(orders.begin(), orders.end(), [](const Order& a, const Order& b) {
+        return a.patience < b.patience;
+    });
+
+    std::vector<std::string> queue;
+    std::vector<std::string> urgent;
+    int totalShots = 0;
+
+    for (const Order& order : orders) {
+        queue.push_back(order.name + ": " + order.drink);
+        totalShots += order.shots;
+        if (order.patience <= 2) urgent.push_back(order.name);
     }
-    std::cout << std::endl;
-    
-    // Calculate sum
-    int sum = std::accumulate(numbers.begin(), numbers.end(), 0);
-    std::cout << "Sum of numbers: " << sum << std::endl;
-    
+
+    std::cout << "Tiny Cafe queue: " << join(queue, " -> ") << std::endl;
+    std::cout << "Needs coffee immediately: " << join(urgent, ", ") << std::endl;
+    std::cout << "Total espresso shots: " << totalShots << std::endl;
+
     return 0;
 }`,
   },
@@ -281,25 +314,33 @@ int main() {
     defaultCode: `using System;
 using System.Linq;
 
+class Order {
+    public string Name { get; set; }
+    public string Drink { get; set; }
+    public int Patience { get; set; }
+    public int Shots { get; set; }
+}
+
 class Program {
     static void Main() {
-        // Create array
-        int[] numbers = { 1, 2, 3, 4, 5 };
-        
-        // Print original numbers
-        Console.WriteLine($"Original numbers: {string.Join(" ", numbers)}");
-        
-        // Calculate squares
-        var squares = numbers.Select(n => n * n);
-        Console.WriteLine($"Squared numbers: {string.Join(" ", squares)}");
-        
-        // Filter even numbers
-        var evenNumbers = numbers.Where(n => n % 2 == 0);
-        Console.WriteLine($"Even numbers: {string.Join(" ", evenNumbers)}");
-        
-        // Calculate sum
-        var sum = numbers.Sum();
-        Console.WriteLine($"Sum of numbers: {sum}");
+        var orders = new[] {
+            new Order { Name = "Ari", Drink = "oat latte", Patience = 2, Shots = 2 },
+            new Order { Name = "Bo", Drink = "cold brew", Patience = 5, Shots = 3 },
+            new Order { Name = "Cy", Drink = "matcha", Patience = 1, Shots = 0 },
+            new Order { Name = "Dee", Drink = "espresso", Patience = 3, Shots = 1 },
+        };
+
+        var queue = orders
+            .OrderBy(order => order.Patience)
+            .Select(order => order.Name + ": " + order.Drink);
+        var urgent = orders
+            .Where(order => order.Patience <= 2)
+            .Select(order => order.Name);
+        var totalShots = orders.Sum(order => order.Shots);
+
+        Console.WriteLine("Tiny Cafe queue: " + string.Join(" -> ", queue));
+        Console.WriteLine("Needs coffee immediately: " + string.Join(", ", urgent));
+        Console.WriteLine("Total espresso shots: " + totalShots);
     }
 }`,
   },
@@ -311,23 +352,21 @@ class Program {
     judge0LanguageId: 72,
     onlineCompilerId: "ruby-4.0",
     monacoLanguage: "ruby",
-    defaultCode: `# Create array
-numbers = [1, 2, 3, 4, 5]
+    defaultCode: `# Tiny Cafe Queue
+orders = [
+  { name: "Ari", drink: "oat latte", patience: 2, shots: 2 },
+  { name: "Bo", drink: "cold brew", patience: 5, shots: 3 },
+  { name: "Cy", drink: "matcha", patience: 1, shots: 0 },
+  { name: "Dee", drink: "espresso", patience: 3, shots: 1 }
+]
 
-# Print original numbers
-puts "Original numbers: #{numbers.join(' ')}"
+queue = orders.sort_by { |order| order[:patience] }
+urgent = orders.select { |order| order[:patience] <= 2 }.map { |order| order[:name] }
+total_shots = orders.sum { |order| order[:shots] }
 
-# Calculate squares
-squares = numbers.map { |n| n * n }
-puts "Squared numbers: #{squares.join(' ')}"
-
-# Filter even numbers
-even_numbers = numbers.select { |n| n.even? }
-puts "Even numbers: #{even_numbers.join(' ')}"
-
-# Calculate sum
-sum = numbers.sum
-puts "Sum of numbers: #{sum}"`,
+puts "Tiny Cafe queue: #{queue.map { |order| "#{order[:name]}: #{order[:drink]}" }.join(" -> ")}"
+puts "Needs coffee immediately: #{urgent.join(", ")}"
+puts "Total espresso shots: #{total_shots}"`,
   },
   swift: {
     id: "swift",
@@ -336,23 +375,31 @@ puts "Sum of numbers: #{sum}"`,
     pistonRuntime: { language: "swift", version: "5.3.3" },
     judge0LanguageId: 83,
     monacoLanguage: "swift",
-    defaultCode: `// Create array
-let numbers = [1, 2, 3, 4, 5]
+    defaultCode: `struct Order {
+    let name: String
+    let drink: String
+    let patience: Int
+    let shots: Int
+}
 
-// Print original numbers
-print("Original numbers: \\(numbers)")
+let orders = [
+    Order(name: "Ari", drink: "oat latte", patience: 2, shots: 2),
+    Order(name: "Bo", drink: "cold brew", patience: 5, shots: 3),
+    Order(name: "Cy", drink: "matcha", patience: 1, shots: 0),
+    Order(name: "Dee", drink: "espresso", patience: 3, shots: 1)
+]
 
-// Calculate squares
-let squares = numbers.map { $0 * $0 }
-print("Squared numbers: \\(squares)")
+let queue = orders
+    .sorted { $0.patience < $1.patience }
+    .map { "\\($0.name): \\($0.drink)" }
+let urgent = orders
+    .filter { $0.patience <= 2 }
+    .map { $0.name }
+let totalShots = orders.reduce(0) { total, order in total + order.shots }
 
-// Filter even numbers
-let evenNumbers = numbers.filter { $0 % 2 == 0 }
-print("Even numbers: \\(evenNumbers)")
-
-// Calculate sum
-let sum = numbers.reduce(0, +)
-print("Sum of numbers: \\(sum)")`,
+print("Tiny Cafe queue: \\(queue.joined(separator: " -> "))")
+print("Needs coffee immediately: \\(urgent.joined(separator: ", "))")
+print("Total espresso shots: \\(totalShots)")`,
   },
 };
 

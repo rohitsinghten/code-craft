@@ -189,6 +189,7 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
         language,
         output: "",
         error: null,
+        executionResult: null,
       });
     },
 
@@ -217,23 +218,31 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
       const { language, getCode, editor } = get();
 
       if (!editor) {
-        set({ error: "Editor is still loading. Try again in a moment." });
+        set({
+          error: "Editor is still loading. Try again in a moment.",
+          output: "",
+          executionResult: null,
+        });
         return;
       }
 
       const code = getCode();
 
-      if (!code) {
-        set({ error: "Please enter some code" });
+      if (!code.trim()) {
+        set({ error: "Please enter some code", output: "", executionResult: null });
         return;
       }
 
       if (code.length > MAX_CODE_LENGTH) {
-        set({ error: `Code must be ${MAX_CODE_LENGTH} characters or less` });
+        set({
+          error: `Code must be ${MAX_CODE_LENGTH} characters or less`,
+          output: "",
+          executionResult: null,
+        });
         return;
       }
 
-      set({ isRunning: true, error: null, output: "" });
+      set({ isRunning: true, error: null, output: "", executionResult: null });
 
       try {
         if (language === "javascript") {
